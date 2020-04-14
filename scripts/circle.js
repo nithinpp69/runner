@@ -1,17 +1,26 @@
-function Circle(x, y, r, options) {
-  this.body = Bodies.circle(x, y, r, options);
-  this.r = r;
-  World.add(world, this.body);;
+class Circle {
 
+  constructor(x, y, r, options = {}, color = '#fff') {
+    this.body = Bodies.circle(x, y, r, options);
+    this.r = r;
+    this.color = color;
+    World.add(world, this.body);
+  }
 
-  this.show = function () {
+  removeFromWorld() {
+    World.remove(world, this.body);
+  }
+
+  show = function () {
     var pos = this.body.position;
     var angle = this.body.angle;
+    fill(this.color);
+    noStroke();
     push();
     translate(pos.x, pos.y);
     rotate(radians(angle));
     rectMode(CENTER);
-    ellipse(0, 0, this.r * 2);
+    circle(0, 0, this.r * 2);
     pop();
   }
 
