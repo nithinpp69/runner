@@ -6,6 +6,7 @@ var Engine = Matter.Engine,
 
 var engine, world, ground, player;
 var canvas;
+var score = 0;
 
 var obstacles = [];
 
@@ -22,34 +23,27 @@ function setup() {
   world = engine.world;
   Engine.run(engine);
   ground = new Box(width / 2, height, width, 120, { isStatic: true, friction: 0.8 }, '#3d3e3e');
+  player = new Player(500, height - 120, 30, 80, { restitution: 1, friction: 0.5 }, '#ff9f43');
 
-  for (var i = 0; i < 5; i++) {
-    var temp_obstacles;
-    for (var j = 0; j < 1; j++) {
-      temp_obstacles = [];
-      let x_position = random(width);
-      let pole_height = random(windowHeight - 200);
-      temp_obstacles.push(new Box(x_position, 0, 80, pole_height- 120, { isStatic: true }, '#3d3e'));
-      temp_obstacles.push(new Box(x_position, height - 120, 80, pole_height, { isStatic: true }, '#3d3e'));
-    }
-    obstacles.push(temp_obstacles);
-  }
-
-
-  player = new Circle(50, height - 120, 20, { restitution: 1, friction: 0.5 }, '#ff9f43');
+  setInterval(() => {
+    generatePoles();
+  }, 2000)
 }
 
 function keyPressed() {
   var pos = player.body.position;
   if (keyCode === UP_ARROW) {
-    Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: 0, y: -0.03 });
+    Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: 0.02, y: -0.08 });
   } else if (keyCode === DOWN_ARROW) {
     Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: 0, y: 0.03 });
-  } else if (keyCode === RIGHT_ARROW) {
-    Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: 0.02, y: 0 });
-  } else if (keyCode === LEFT_ARROW) {
-    Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: -0.02, y: 0 });
   }
+}
+
+function generatePoles() {
+  let pole_height = floor(random(80, 120));
+  let pole_width = floor(random(60, 100));
+  let x_position = width + 80;
+  obstacles.push(new Box(x_position, height - pole_height, pole_width, pole_height, { isStatic: true, friction: 0.8 }, '#3d3e'));
 }
 
 function windowResized() {
@@ -59,16 +53,15 @@ function windowResized() {
 
 function draw() {
   background(19, 15, 64);
-  for (var i = 0; i < obstacles.length; i++) {
-    for (var j = 0; j < 2; j++) {
-      obstacles[i][j].show();
+  fill(255);
+  text(floor(score), width - 200, 50);
+  if (obstacles.length > 0)
+    for (var i = 0; i < obstacles.length; i++) {
+      let obstacle = obstacles[i].body;
+      obstacles[i].show();
+      score += 0.03;
+      Body.setPosition(obstacle, { x: obstacle.position.x - 5, y: obstacle.position.y });
     }
-  }
   ground.show();
   player.show();
 }
-// let poleImg;
-
-// function preload() {
-//   poleImg = loadImage('pole.png');
-// }
