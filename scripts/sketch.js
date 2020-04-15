@@ -23,7 +23,7 @@ function setup() {
   world = engine.world;
   Engine.run(engine);
   ground = new Box(width / 2, height, width, 120, { isStatic: true, friction: 0.8 }, '#3d3e3e');
-  player = new Player(500, height - 120, 30, 80, { restitution: 1, friction: 0.5 }, '#ff9f43');
+  player = new Player(200, height - 120, 30, 80, {}, '#ff9f43');
 
   setInterval(() => {
     generatePoles();
@@ -33,7 +33,7 @@ function setup() {
 function keyPressed() {
   var pos = player.body.position;
   if (keyCode === UP_ARROW) {
-    Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: 0.02, y: -0.08 });
+    Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: 0, y: -0.09 });
   } else if (keyCode === DOWN_ARROW) {
     Body.applyForce(player.body, { x: pos.x, y: pos.y }, { x: 0, y: 0.03 });
   }
@@ -51,6 +51,11 @@ function windowResized() {
   centerCanvas();
 }
 
+function mousePressed(){
+  console.log(obstacles.length);
+  console.log(world.bodies.length);
+}
+
 function draw() {
   background(19, 15, 64);
   fill(255);
@@ -61,7 +66,12 @@ function draw() {
       obstacles[i].show();
       score += 0.03;
       Body.setPosition(obstacle, { x: obstacle.position.x - 5, y: obstacle.position.y });
+      if (obstacle.position.x < 0) {
+        obstacles[i].removeFromWorld();
+        obstacles.splice(i,1);
+      }
     }
+
   ground.show();
   player.show();
 }
